@@ -3,21 +3,18 @@ pipeline {
 
     stages {
 
-        stage('Clone Code') {
-            steps {
-                git 'https://github.com/Kittukasa/nodejs-3tier-app.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 bat 'docker build -t nodejs-3tier-app:%BUILD_NUMBER% .'
             }
         }
 
-        stage('List Images') {
+        stage('Login to ECR') {
             steps {
-                bat 'docker images'
+                bat '''
+                aws ecr get-login-password --region ap-south-1 ^
+                | docker login --username AWS --password-stdin 592965056877.dkr.ecr.ap-south-1.amazonaws.com
+                '''
             }
         }
     }
